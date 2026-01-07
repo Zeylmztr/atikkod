@@ -1,0 +1,33 @@
+name: Upload IPA to App Store Connect
+
+on:
+  workflow_dispatch:
+
+jobs:
+  upload:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Create API key file
+        run: |
+          mkdir -p fastlane
+          echo "${{ secrets.APPSTORE_P8 }}" > fastlane/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
+
+      - name: Install fastlane
+        run: sudo gem install fastlane
+
+      - name: Upload IPA
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_FILEPATH: fastlane/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
+        run: |
+          fastlane deliver \
+            --ipa atikkod.ipa \
+            --skip_screenshots \
+            --skip_metadata \
+            --skip_app_version_update \
+            --force
