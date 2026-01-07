@@ -30,4 +30,5 @@ jobs:
             --skip_screenshots \
             --skip_metadata \
             --skip_app_version_update \
-            --force
+            --force \
+            --api_key_path ./fastlane/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
