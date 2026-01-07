@@ -8,22 +8,22 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout repo
+      # 1️⃣ Repo'yu çek
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Create API key file
-        run: |
-          mkdir -p fastlane
-          echo "${{ secrets.APPSTORE_P8 }}" | tr -d '\r' > fastlane/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
-
+      # 2️⃣ Fastlane kurulumu
       - name: Install fastlane
         run: sudo gem install fastlane
 
+      # 3️⃣ JSON API Key dosyasını oluştur
+      - name: Create API key JSON file
+        run: |
+          mkdir -p fastlane
+          echo "${{ secrets.APPSTORE_API_KEY_JSON }}" > fastlane/AuthKey.json
+
+      # 4️⃣ IPA'yı App Store Connect'e yükle
       - name: Upload IPA
-        env:
-          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
-          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
-          APP_STORE_CONNECT_API_KEY_FILEPATH: fastlane/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
         run: |
           fastlane deliver \
             --ipa ./atikkodum.ipa \
@@ -31,6 +31,4 @@ jobs:
             --skip_metadata \
             --skip_app_version_update \
             --force \
-            --api_key_path ./fastlane/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8 \
-            --api_key_id ${{ secrets.APPSTORE_KEY_ID }} \
-            --api_issuer_id ${{ secrets.APPSTORE_ISSUER_ID }}
+            --api-key ./fastlane/AuthKey.json
