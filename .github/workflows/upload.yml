@@ -16,19 +16,14 @@ jobs:
       - name: Install fastlane
         run: sudo gem install fastlane
 
-      # 3️⃣ JSON API Key dosyasını oluştur
-      - name: Create API key JSON file
-        run: |
-          mkdir -p fastlane
-          echo "${{ secrets.APPSTORE_API_KEY_JSON }}" > fastlane/AuthKey.json
-
-      # 4️⃣ IPA'yı App Store Connect'e yükle
+      # 3️⃣ IPA'yı App Store Connect'e yükle
       - name: Upload IPA
+        env:
+          DELIVER_API_KEY: ${{ secrets.APPSTORE_API_KEY_JSON }}
         run: |
           fastlane deliver \
             --ipa ./atikkodum.ipa \
             --skip_screenshots \
             --skip_metadata \
             --skip_app_version_update \
-            --force \
-            --api-key ./fastlane/AuthKey.json
+            --force
